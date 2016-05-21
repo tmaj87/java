@@ -1,0 +1,6 @@
+git checkout --orphan temporary
+git add -A
+git commit
+git branch -D master
+git branch -m master
+git push -u --force origin master
