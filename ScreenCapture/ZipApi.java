@@ -8,22 +8,32 @@ public class ZipApi {
 
     private ZipOutputStream zipStream;
 
-    public ZipApi(String path) throws FileNotFoundException {
+    private ZipApi(String path) throws FileNotFoundException {
         FileOutputStream outputStream = new FileOutputStream(path);
         zipStream = new ZipOutputStream(outputStream);
     }
 
-    public void pack(String[] files) throws IOException {
-        for (String file : files) {
-            pack(file);
-        }
+    public static ZipApi to(String location) throws FileNotFoundException {
+        return new ZipApi(location);
     }
 
     public void pack(String file) throws IOException {
+        pack(new String[]{file});
+    }
+
+    public void pack(String[] files) throws IOException {
+        for (String file : files) {
+            addToZip(file);
+        }
+        closeStream();
+    }
+
+    private ZipApi addToZip(String file) throws IOException {
         try (FileInputStream inputStream = new FileInputStream(file)) {
             createEntry(file);
-            writeToZip(inputStream);
+            writeToStream(inputStream);
         }
+        return this;
     }
 
     private void createEntry(String file) throws IOException {
@@ -32,7 +42,7 @@ public class ZipApi {
         zipStream.putNextEntry(entry);
     }
 
-    private void writeToZip(FileInputStream inputStream) throws IOException {
+    private void writeToStream(FileInputStream inputStream) throws IOException {
         byte[] readBuffer = new byte[1024];
         int amountRead;
         while ((amountRead = inputStream.read(readBuffer)) > 0) {
@@ -40,7 +50,7 @@ public class ZipApi {
         }
     }
 
-    public void close() throws IOException {
+    public void closeStream() throws IOException {
         zipStream.close();
     }
 }
