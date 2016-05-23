@@ -50,7 +50,7 @@ public class ZipApi {
         }
     }
 
-    public void closeStream() throws IOException {
+    private void closeStream() throws IOException {
         zipStream.close();
     }
 }
