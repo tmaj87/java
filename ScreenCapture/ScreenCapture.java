@@ -90,7 +90,9 @@ public class ScreenCapture {
     }
 
     private void pack(String[] images) throws IOException {
-        ZipApi.to(DESTINATION + ZIP_FILE).pack(images);
+        try(ZipApi zipApi = ZipApi.to(DESTINATION + ZIP_FILE)) {
+            zipApi.pack(images);
+        }
     }
 
     private String[] getCapturedImages() throws IOException {

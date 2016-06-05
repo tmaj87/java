@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-public class ZipApi {
+public class ZipApi implements Closeable {
 
     private ZipOutputStream zipStream;
 
@@ -25,7 +25,6 @@ public class ZipApi {
         for (String file : files) {
             addToZip(file);
         }
-        closeStream();
     }
 
     private ZipApi addToZip(String file) throws IOException {
@@ -50,7 +49,8 @@ public class ZipApi {
         }
     }
 
-    private void closeStream() throws IOException {
+    @Override
+    public void close() throws IOException {
         zipStream.close();
     }
 }
