@@ -15,7 +15,7 @@ import java.util.concurrent.Executors;
 class ClientHandler {
 
     private final Log4j log4j = new Log4j(this);
-    private final Settings settings;
+    private final Settings settings = Settings.getInstance();
     private final Socket connection;
     private boolean isConnected = true;
     private ObjectOutputStream output;
@@ -23,8 +23,7 @@ class ClientHandler {
     private String hostIp = "NO_IP";
     private String nick = "NO_NICK";
 
-    ClientHandler(Socket client, Settings settings) {
-        this.settings = settings;
+    ClientHandler(Socket client) {
         connection = client;
         setClientInfo();
         settings.coordinator.register();

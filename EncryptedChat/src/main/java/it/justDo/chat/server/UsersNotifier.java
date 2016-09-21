@@ -5,11 +5,10 @@ import it.justDo.chat.common.Log4j;
 
 class UsersNotifier {
 
-    private final Settings settings;
+    private final Settings settings = Settings.getInstance();
     private final Log4j log4j = new Log4j(this);
 
-    public UsersNotifier(Settings settings) {
-        this.settings = settings;
+    UsersNotifier() {
         init();
     }
 

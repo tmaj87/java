@@ -13,16 +13,18 @@ class AServer {
 
     private static final ExecutorService POOL = Executors.newCachedThreadPool();
     private final Log4j log4j = new Log4j(this);
-    private Settings settings = new Settings();
 
     private AServer(int port) {
-        POOL.execute(() -> new MessageCleaner(settings));
-        POOL.execute(() -> new UsersNotifier(settings));
+        POOL.execute(MessageCleaner::new);
+        POOL.execute(UsersNotifier::new);
+        listenOn(port);
+    }
 
+    private void listenOn(int port) {
         try (ServerSocket listener = new ServerSocket(port)) {
             while (true) {
                 final Socket client = listener.accept();
-                POOL.execute(() -> new ClientHandler(client, settings));
+                POOL.execute(() -> new ClientHandler(client));
             }
         } catch (IOException e) {
             log4j.WARN(e.getMessage());

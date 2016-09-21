@@ -2,10 +2,9 @@ package it.justDo.chat.server;
 
 class MessageCleaner {
 
-    private final Settings settings;
+    private final Settings settings = Settings.getInstance();
 
-    public MessageCleaner(Settings settings) {
-        this.settings = settings;
+    public MessageCleaner() {
         settings.coordinator.register();
         init();
     }
