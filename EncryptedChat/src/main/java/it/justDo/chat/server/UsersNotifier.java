@@ -5,7 +5,7 @@ import it.justDo.chat.common.Log4j;
 
 class UsersNotifier {
 
-    private final Settings settings = Settings.getInstance();
+    private final Coordinator coordinator = Coordinator.getInstance();
     private final Log4j log4j = new Log4j(this);
 
     UsersNotifier() {
@@ -15,14 +15,18 @@ class UsersNotifier {
     private void init() {
         try {
             while (true) {
-                if (settings.users.size() > 0) {
-                    final FromServerMessage usersMessage = new FromServerMessage(settings.users.toArray(new String[settings.users.size()]));
-                    settings.messages.add(usersMessage);
+                if (coordinator.users.size() > 0) {
+                    final FromServerMessage usersMessage = newMessage();
+                    coordinator.postNewMessage(usersMessage);
                 }
                 Thread.sleep(900); // let's not spam too much
             }
         } catch (InterruptedException e) {
             log4j.WARN(e.getMessage());
         }
+    }
+
+    private FromServerMessage newMessage() {
+        return new FromServerMessage(coordinator.users.toArray(new String[coordinator.users.size()]));
     }
 }

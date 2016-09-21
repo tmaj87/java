@@ -2,20 +2,24 @@ package it.justDo.chat.server;
 
 class MessageCleaner {
 
-    private final Settings settings = Settings.getInstance();
+    private final Coordinator coordinator = Coordinator.getInstance();
 
-    public MessageCleaner() {
-        settings.coordinator.register();
+    MessageCleaner() {
+        coordinator.phaser.register();
         init();
     }
 
     private void init() {
         while (true) {
-            if (settings.messages.size() > 0) {
-                settings.coordinator.arriveAndAwaitAdvance();
-                settings.messages.poll();
-                settings.openGate();
+            if (coordinator.isNewMessagePresent()) {
+                cleanMessage();
             }
         }
+    }
+
+    private void cleanMessage() {
+        coordinator.phaser.arriveAndAwaitAdvance();
+        coordinator.messages.poll();
+        coordinator.openGate();
     }
 }

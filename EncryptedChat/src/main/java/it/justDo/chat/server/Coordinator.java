@@ -9,22 +9,22 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Phaser;
 
-class Settings {
+class Coordinator {
 
-    private static Settings instance = null;
+    private static Coordinator instance = null;
 
-    final Phaser coordinator = new Phaser();
+    final Phaser phaser = new Phaser();
     final Queue<FromServerMessage> messages = new ConcurrentLinkedQueue<>();
     final Set<String> users = new HashSet<>();
     CountDownLatch gate;
 
-    private Settings() {
+    private Coordinator() {
         resetGate();
     }
 
-    public static Settings getInstance() {
+    static Coordinator getInstance() {
         if (instance == null) {
-            instance = new Settings();
+            instance = new Coordinator();
         }
         return instance;
     }
@@ -38,4 +38,21 @@ class Settings {
         resetGate();
     }
 
+    boolean isNewMessagePresent() {
+        return messages.size() > 0;
+    }
+
+    void postNewMessage(FromServerMessage message) {
+        messages.add(message);
+    }
+
+    void register(String name) {
+        phaser.register();
+        users.add(name);
+    }
+
+    void deregister(String name) {
+        phaser.arriveAndDeregister();
+        users.remove(name);
+    }
 }

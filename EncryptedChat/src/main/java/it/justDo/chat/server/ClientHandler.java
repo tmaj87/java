@@ -15,27 +15,31 @@ import java.util.concurrent.Executors;
 class ClientHandler {
 
     private final Log4j log4j = new Log4j(this);
-    private final Settings settings = Settings.getInstance();
+    private final Coordinator coordinator = Coordinator.getInstance();
     private final Socket connection;
     private boolean isConnected = true;
     private ObjectOutputStream output;
     private ObjectInputStream input;
-    private String hostIp = "NO_IP";
+    private String clientIp = "NO_IP";
     private String nick = "NO_NICK";
 
     ClientHandler(Socket client) {
         connection = client;
         setClientInfo();
-        settings.coordinator.register();
-        settings.users.add(nick);
+        register();
         initCommunication();
-        log4j.INFO(hostIp + " connected");
+        log4j.INFO(clientIp + " connected");
     }
 
     private void setClientInfo() {
         String hostName = connection.getInetAddress().getHostName();
-        hostIp = connection.getInetAddress().getHostAddress();
+        clientIp = connection.getInetAddress().getHostAddress();
         nick = Shared.getSHA256(hostName + Thread.currentThread().getName()).substring(0, 8);
+    }
+
+    private void register() {
+        coordinator.register(nick);
+
     }
 
     private void initCommunication() {
@@ -55,12 +59,12 @@ class ClientHandler {
     }
 
     private void handleRead() {
-        ToServerMessage oneObject;
+        ToServerMessage toServerMessage;
         try {
-            while ((oneObject = (ToServerMessage) input.readObject()) != null) {
-                log4j.INFO(hostIp + " wrote");
-                final FromServerMessage message = newMessage(oneObject);
-                if (!settings.messages.offer(message)) {
+            while ((toServerMessage = (ToServerMessage) input.readObject()) != null) {
+                log4j.INFO(clientIp + " wrote");
+                final FromServerMessage message = newMessage(toServerMessage);
+                if (!coordinator.messages.offer(message)) {
                     log4j.WARN("Queue full.");
                 }
             }
@@ -69,17 +73,15 @@ class ClientHandler {
         }
     }
 
-    private FromServerMessage newMessage(ToServerMessage oneObject) {
-        return new FromServerMessage(nick, oneObject.message, oneObject.vector);
+    private FromServerMessage newMessage(ToServerMessage message) {
+        return new FromServerMessage(nick, message.content, message.vector);
     }
 
     private void handleWrite() {
         try {
             while (isConnected) {
-                if (isMessagePresent()) {
-                    output.writeObject(settings.messages.peek());
-                    settings.coordinator.arriveAndAwaitAdvance();
-                    settings.gate.await();
+                if (coordinator.isNewMessagePresent()) {
+                    propagateMessage();
                 }
             }
         } catch (IOException e) {
@@ -89,8 +91,10 @@ class ClientHandler {
         }
     }
 
-    private boolean isMessagePresent() {
-        return settings.messages.size() > 0;
+    private void propagateMessage() throws IOException, InterruptedException {
+        output.writeObject(coordinator.messages.peek());
+        coordinator.phaser.arriveAndAwaitAdvance();
+        coordinator.gate.await();
     }
 
     private void closeConnection() {
@@ -100,8 +104,7 @@ class ClientHandler {
     }
 
     private void deregister() {
-        settings.coordinator.arriveAndDeregister();
-        settings.users.remove(nick);
+        coordinator.deregister(nick);
     }
 
     private void disconnect() {
@@ -110,7 +113,7 @@ class ClientHandler {
         } catch (IOException e) {
             log4j.WARN(e.getMessage());
         } finally {
-            log4j.INFO(hostIp + " disconnected");
+            log4j.INFO(clientIp + " disconnected");
         }
     }
 }
