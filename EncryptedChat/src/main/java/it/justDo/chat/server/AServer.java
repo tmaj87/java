@@ -11,12 +11,12 @@ import java.util.concurrent.Executors;
 
 class AServer {
 
-    private static final ExecutorService POOL = Executors.newCachedThreadPool();
+    private static final ExecutorService pool = Executors.newCachedThreadPool();
     private final Log4j log4j = new Log4j(this);
 
     private AServer(int port) {
-        POOL.execute(MessageCleaner::new);
-        POOL.execute(UsersNotifier::new);
+        pool.execute(MessageCleaner::new);
+        pool.execute(UsersNotifier::new);
         listenOn(port);
     }
 
@@ -24,7 +24,7 @@ class AServer {
         try (ServerSocket listener = new ServerSocket(port)) {
             while (true) {
                 final Socket client = listener.accept();
-                POOL.execute(() -> new ClientHandler(client));
+                pool.execute(() -> new ClientHandler(client));
             }
         } catch (IOException e) {
             log4j.WARN(e.getMessage());
