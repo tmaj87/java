@@ -10,6 +10,8 @@ import java.io.IOException;
 
 public class HTMLJTextPane extends JTextPane {
 
+    private final Log4j log4j = new Log4j(this);
+
     public HTMLJTextPane() {
         super();
         this.setContentType("text/html");
@@ -21,16 +23,16 @@ public class HTMLJTextPane extends JTextPane {
         try {
             htmlDocument.insertBeforeEnd(findTag(htmlDocument, HTML.Tag.BODY), string);
         } catch (BadLocationException | IOException e) {
-            e.printStackTrace();
+            log4j.INFO(e.getMessage());
         }
     }
 
-    private void reset() { // trick...
+    private void reset() {
         HTMLDocument htmlDocument = (HTMLDocument) this.getStyledDocument();
         try {
             htmlDocument.setInnerHTML(findTag(htmlDocument, HTML.Tag.BODY), "<i></i>");
         } catch (BadLocationException | IOException e) {
-            e.printStackTrace();
+            log4j.INFO(e.getMessage());
         }
     }
 
