@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 public class Shared {
 
-    public static final String IP = "14.69.22.120";
+    public static final String IP = "127.0.0.1";
     public static final int PORT = 9191;
     public static final String CHARSET_NAME = "UTF-8";
 

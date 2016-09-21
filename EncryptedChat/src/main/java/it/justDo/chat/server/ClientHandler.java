@@ -1,6 +1,7 @@
 package it.justDo.chat.server;
 
 import it.justDo.chat.common.FromServerMessage;
+import it.justDo.chat.common.Log4j;
 import it.justDo.chat.common.Shared;
 import it.justDo.chat.common.ToServerMessage;
 
@@ -10,34 +11,35 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.WARNING;
 
 class ClientHandler {
 
-    private static final boolean DEBUG = true;
-
+    private final Logger log4j = Log4j.getInstance(this);
     private final Settings settings;
     private final Socket connection;
     private boolean isConnected = true;
     private ObjectOutputStream output;
     private ObjectInputStream input;
-    private String hostName = "NO_HOST";
     private String hostIp = "NO_IP";
     private String nick = "NO_NICK";
 
-    public ClientHandler(Socket client, Settings settings) {
+    ClientHandler(Socket client, Settings settings) {
         this.settings = settings;
         connection = client;
         setClientInfo();
         settings.coordinator.register();
         settings.users.add(nick);
         initCommunication();
-        if (DEBUG) {
-            System.out.println(hostIp + " connected");
-        }
+        log4j.log(INFO, hostIp + " connected");
     }
 
     private void setClientInfo() {
-        hostName = connection.getInetAddress().getHostName();
+        String hostName = connection.getInetAddress().getHostName();
         hostIp = connection.getInetAddress().getHostAddress();
         nick = Shared.getSHA256(hostName + Thread.currentThread().getName()).substring(0, 8);
     }
@@ -58,11 +60,9 @@ class ClientHandler {
         ToServerMessage oneObject;
         try {
             while ((oneObject = (ToServerMessage) input.readObject()) != null) {
-                if (DEBUG) {
-                    System.out.println(hostIp + " wrote");
-                }
+                log4j.log(INFO, hostIp + " wrote");
                 if (!settings.messages.offer(new FromServerMessage(nick, oneObject.message, oneObject.vector))) {
-                    System.out.println("Error: queue full!");
+                    log4j.log(WARNING, "Queue full.");
                 }
             }
         } catch (IOException | ClassNotFoundException e) {
@@ -73,7 +73,7 @@ class ClientHandler {
     private void handleWrite() {
         try {
             while (isConnected) {
-                if (settings.messages.size() > 0) {
+                if (isMessagePresent()) {
                     output.writeObject(settings.messages.peek());
                     settings.coordinator.arriveAndAwaitAdvance();
                     settings.gate.await();
@@ -86,6 +86,10 @@ class ClientHandler {
         }
     }
 
+    private boolean isMessagePresent() {
+        return settings.messages.size() > 0;
+    }
+
     private void closeConnection() {
         isConnected = false;
         settings.coordinator.arriveAndDeregister();
@@ -93,11 +97,9 @@ class ClientHandler {
         try {
             connection.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            log4j.log(WARNING, e.getMessage());
         } finally {
-            if (DEBUG) {
-                System.out.println(hostIp + " disconnected");
-            }
+            log4j.log(INFO, hostIp + " disconnected");
         }
     }
 }

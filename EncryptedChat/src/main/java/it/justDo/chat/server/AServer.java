@@ -1,22 +1,37 @@
 package it.justDo.chat.server;
 
-import it.justDo.chat.common.FromServerMessage;
+import it.justDo.chat.common.Log4j;
 import it.justDo.chat.common.Shared;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashSet;
-import java.util.Queue;
-import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Phaser;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static java.util.logging.Level.WARNING;
 
 class AServer {
 
-    Settings settings = new Settings();
+    private static final ExecutorService POOL = Executors.newCachedThreadPool();
+    private final Logger log4j = Log4j.getInstance(this);
+    private Settings settings = new Settings();
+
+    private AServer(int port) {
+        POOL.execute(() -> new MessageCleaner(settings));
+        POOL.execute(() -> new UsersNotifier(settings));
+
+        try (ServerSocket listener = new ServerSocket(port)) {
+            while (true) {
+                final Socket client = listener.accept();
+                POOL.execute(() -> new ClientHandler(client, settings));
+            }
+        } catch (IOException e) {
+            log4j.log(WARNING, e.getMessage());
+        }
+    }
 
     public static void main(String[] args) {
         int port = Shared.PORT;
@@ -27,19 +42,5 @@ class AServer {
             }
         }
         new AServer(port);
-    }
-
-    public AServer(int port) {
-        ExecutorService pool = Executors.newCachedThreadPool();
-        try (ServerSocket listener = new ServerSocket(port)) {
-            pool.execute(() -> new MessageCleaner(settings));
-            pool.execute(() -> new UsersNotifier(settings));
-            while (true) {
-                final Socket client = listener.accept();
-                pool.execute(() -> new ClientHandler(client, settings));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }
