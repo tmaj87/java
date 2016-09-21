@@ -11,15 +11,10 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import static java.util.logging.Level.INFO;
-import static java.util.logging.Level.WARNING;
 
 class ClientHandler {
 
-    private final Logger log4j = Log4j.getInstance(this);
+    private final Log4j log4j = new Log4j(this);
     private final Settings settings;
     private final Socket connection;
     private boolean isConnected = true;
@@ -35,7 +30,7 @@ class ClientHandler {
         settings.coordinator.register();
         settings.users.add(nick);
         initCommunication();
-        log4j.log(INFO, hostIp + " connected");
+        log4j.INFO(hostIp + " connected");
     }
 
     private void setClientInfo() {
@@ -60,9 +55,9 @@ class ClientHandler {
         ToServerMessage oneObject;
         try {
             while ((oneObject = (ToServerMessage) input.readObject()) != null) {
-                log4j.log(INFO, hostIp + " wrote");
+                log4j.INFO(hostIp + " wrote");
                 if (!settings.messages.offer(new FromServerMessage(nick, oneObject.message, oneObject.vector))) {
-                    log4j.log(WARNING, "Queue full.");
+                    log4j.WARN("Queue full.");
                 }
             }
         } catch (IOException | ClassNotFoundException e) {
@@ -97,9 +92,9 @@ class ClientHandler {
         try {
             connection.close();
         } catch (IOException e) {
-            log4j.log(WARNING, e.getMessage());
+            log4j.WARN(e.getMessage());
         } finally {
-            log4j.log(INFO, hostIp + " disconnected");
+            log4j.INFO(hostIp + " disconnected");
         }
     }
 }

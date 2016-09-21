@@ -1,10 +1,12 @@
 package it.justDo.chat.server;
 
 import it.justDo.chat.common.FromServerMessage;
+import it.justDo.chat.common.Log4j;
 
 class UsersNotifier {
 
     private final Settings settings;
+    private final Log4j log4j = new Log4j(this);
 
     public UsersNotifier(Settings settings) {
         this.settings = settings;
@@ -21,7 +23,7 @@ class UsersNotifier {
                 Thread.sleep(900); // let's not spam too much
             }
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            log4j.WARN(e.getMessage());
         }
     }
 }

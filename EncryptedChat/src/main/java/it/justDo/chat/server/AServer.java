@@ -8,15 +8,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import static java.util.logging.Level.WARNING;
 
 class AServer {
 
     private static final ExecutorService POOL = Executors.newCachedThreadPool();
-    private final Logger log4j = Log4j.getInstance(this);
+    private final Log4j log4j = new Log4j(this);
     private Settings settings = new Settings();
 
     private AServer(int port) {
@@ -29,7 +25,7 @@ class AServer {
                 POOL.execute(() -> new ClientHandler(client, settings));
             }
         } catch (IOException e) {
-            log4j.log(WARNING, e.getMessage());
+            log4j.WARN(e.getMessage());
         }
     }
 

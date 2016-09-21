@@ -1,7 +1,4 @@
-package it.justDo.chat.client;
-
-import it.justDo.chat.common.ToServerMessage;
-import it.justDo.chat.common.Shared;
+package it.justDo.chat.common;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
@@ -11,21 +8,22 @@ import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 
-class AesEncryption {
+public class AesEncryption {
 
     private static final int KEY_LENGTH = 16; // TODO 24, 32 - Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy
     private SecretKey secretKey = null;
     private Cipher cipher;
+    private final Log4j log4j = new Log4j(this);
 
     public ToServerMessage encrypt(String string) {
         ToServerMessage encrypted = null;
         try {
-            checkKeyPresence();
+            checkKey();
             byte[] byteString = string.getBytes(Shared.CHARSET_NAME);
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
             encrypted = new ToServerMessage(cipher.doFinal(byteString), cipher.getIV());
         } catch (Exception e) {
-            e.printStackTrace();
+            log4j.INFO(e.getMessage());
         }
         return encrypted;
     }
@@ -33,7 +31,7 @@ class AesEncryption {
     public String decrypt(byte[] message, byte[] vector) {
         String decrypted;
         try {
-            checkKeyPresence();
+            checkKey();
             cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(vector));
             decrypted = new String(cipher.doFinal(message), Shared.CHARSET_NAME);
         } catch (Exception e) {
@@ -42,7 +40,7 @@ class AesEncryption {
         return decrypted;
     }
 
-    private void checkKeyPresence() throws Exception {
+    private void checkKey() throws Exception {
         if (secretKey == null) {
             throw new Exception("Key is not present.");
         }
@@ -64,7 +62,7 @@ class AesEncryption {
             secretKey = new SecretKeySpec(keyBytes, "AES");
             cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | UnsupportedEncodingException e) {
-            e.printStackTrace();
+            log4j.WARN(e.getMessage());
         }
     }
 }
