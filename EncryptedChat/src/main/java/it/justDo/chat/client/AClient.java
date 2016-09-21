@@ -1,5 +1,6 @@
 package it.justDo.chat.client;
 
+import it.justDo.chat.common.AesEncryption;
 import it.justDo.chat.common.FromServerMessage;
 import it.justDo.chat.common.Shared;
 import it.justDo.chat.common.ToServerMessage;
@@ -42,7 +43,7 @@ class AClient {
         }
     }
 
-    public AClient(Socket socket) {
+    private AClient(Socket socket) {
         Executor pool = Executors.newFixedThreadPool(2);
         try {
             ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
@@ -98,11 +99,11 @@ class AClient {
         }
     }
 
-    public void putMessage(String message) {
+    void putMessage(String message) {
         messages.push(safety.encrypt(message));
     }
 
-    public void setEncryptionKey(String string) {
+    void setEncryptionKey(String string) {
         safety.setKey(string);
     }
 
@@ -129,9 +130,7 @@ class AClient {
     }
 
     private String translateUser(String user) {
-        if (userColorMap.get(user) == null) {
-            userColorMap.put(user, getColoredTag(user));
-        }
+        userColorMap.putIfAbsent(user, getColoredTag(user));
         return userColorMap.get(user);
     }
 

@@ -10,7 +10,7 @@ class ChatWindow extends JFrame {
 
     private static final Integer WIN_WIDTH = 600;
     private static final Integer WIN_HEIGHT = 328;
-    private static final String WIN_TITLE = "ub3r ch@t 4 l33t HaXoRz";
+    private static final String WIN_TITLE = "Anonymous Chat";
 
     private final AClient caller;
     private final HTMLJTextPane displayField = new HTMLJTextPane();
@@ -23,7 +23,7 @@ class ChatWindow extends JFrame {
     private final JPasswordField passwordField = new JPasswordField();
     private final JButton passwordButton = new JButton("set key");
 
-    public ChatWindow(AClient aClient) {
+    ChatWindow(AClient aClient) {
         caller = aClient;
         setupWindow();
         setupFields();
@@ -35,7 +35,7 @@ class ChatWindow extends JFrame {
         setSize(WIN_WIDTH, WIN_HEIGHT);
         setLocationRelativeTo(null); // center window
         setResizable(false);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLayout(null);
     }
 
@@ -97,7 +97,7 @@ class ChatWindow extends JFrame {
         return messageInput.getText().trim();
     }
 
-    public void writeToDisplay(String string) {
+    void writeToDisplay(String string) {
         displayField.append(string);
         scrollDisplayToBottom();
     }
@@ -109,11 +109,11 @@ class ChatWindow extends JFrame {
         });
     }
 
-    public void writeToUsersList(String string) {
+    void writeToUsersList(String string) {
         usersList.setText(string);
     }
 
-    public void makeVisible() {
+    void makeVisible() {
         setVisible(true);
         passwordField.grabFocus();
     }
