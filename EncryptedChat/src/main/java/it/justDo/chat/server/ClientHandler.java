@@ -64,9 +64,7 @@ class ClientHandler {
             while ((toServerMessage = (ToServerMessage) input.readObject()) != null) {
                 log4j.INFO(clientIp + " wrote");
                 final FromServerMessage message = newMessage(toServerMessage);
-                if (!coordinator.messages.offer(message)) {
-                    log4j.WARN("Queue full.");
-                }
+                coordinator.postNewMessage(message);
             }
         } catch (Exception e) {
             closeConnection();

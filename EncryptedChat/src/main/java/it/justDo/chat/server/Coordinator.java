@@ -1,6 +1,7 @@
 package it.justDo.chat.server;
 
 import it.justDo.chat.common.FromServerMessage;
+import it.justDo.chat.common.Log4j;
 
 import java.util.HashSet;
 import java.util.Queue;
@@ -12,10 +13,10 @@ import java.util.concurrent.Phaser;
 class Coordinator {
 
     private static Coordinator instance = null;
-
     final Phaser phaser = new Phaser();
     final Queue<FromServerMessage> messages = new ConcurrentLinkedQueue<>();
     final Set<String> users = new HashSet<>();
+    private final Log4j log4j = new Log4j(this);
     CountDownLatch gate;
 
     private Coordinator() {
@@ -43,7 +44,9 @@ class Coordinator {
     }
 
     void postNewMessage(FromServerMessage message) {
-        messages.add(message);
+        if (!messages.offer(message)) {
+            log4j.WARN("Queue full.");
+        }
     }
 
     void register(String name) {
