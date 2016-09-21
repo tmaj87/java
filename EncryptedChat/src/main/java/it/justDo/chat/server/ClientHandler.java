@@ -43,8 +43,12 @@ class ClientHandler {
             output = new ObjectOutputStream(connection.getOutputStream());
             input = new ObjectInputStream(connection.getInputStream());
         } catch (IOException e) {
-            e.printStackTrace();
+            log4j.WARN(e.getMessage());
         }
+        communicate();
+    }
+
+    private void communicate() {
         Executor pool = Executors.newFixedThreadPool(2);
         pool.execute(this::handleRead);
         pool.execute(this::handleWrite);
@@ -55,13 +59,18 @@ class ClientHandler {
         try {
             while ((oneObject = (ToServerMessage) input.readObject()) != null) {
                 log4j.INFO(hostIp + " wrote");
-                if (!settings.messages.offer(new FromServerMessage(nick, oneObject.message, oneObject.vector))) {
+                final FromServerMessage message = newMessage(oneObject);
+                if (!settings.messages.offer(message)) {
                     log4j.WARN("Queue full.");
                 }
             }
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (Exception e) {
             closeConnection();
         }
+    }
+
+    private FromServerMessage newMessage(ToServerMessage oneObject) {
+        return new FromServerMessage(nick, oneObject.message, oneObject.vector);
     }
 
     private void handleWrite() {
@@ -76,7 +85,7 @@ class ClientHandler {
         } catch (IOException e) {
             closeConnection();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            log4j.INFO(e.getMessage());
         }
     }
 
@@ -86,8 +95,16 @@ class ClientHandler {
 
     private void closeConnection() {
         isConnected = false;
+        deregister();
+        disconnect();
+    }
+
+    private void deregister() {
         settings.coordinator.arriveAndDeregister();
         settings.users.remove(nick);
+    }
+
+    private void disconnect() {
         try {
             connection.close();
         } catch (IOException e) {
