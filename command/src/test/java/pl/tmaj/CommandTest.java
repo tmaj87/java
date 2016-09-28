@@ -24,8 +24,8 @@ public class CommandTest {
 
     @Test
     public void shouldGetPingWithIp() {
-        String ping = new CommandPing(IP).execute();
+        String ping = new CommandPing().execute(IP);
 
-        assertEquals("ping " + IP, ping);
+        assertEquals("pinging " + IP, ping);
     }
 }
