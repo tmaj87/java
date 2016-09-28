@@ -20,7 +20,7 @@ public class CommandTest {
     public void shouldExecutePingCommand() {
         String ping = listener.execute(new CommandPing());
 
-        assertEquals(null, ping);
+        assertEquals("", ping);
     }
 
     @Test

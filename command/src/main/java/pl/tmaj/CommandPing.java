@@ -2,13 +2,19 @@ package pl.tmaj;
 
 public class CommandPing implements Command {
 
-    @Override
-    public String execute() {
-        return "ping";
+    private final String ip;
+
+    public CommandPing(String ip) {
+        this.ip = ip;
     }
 
     @Override
-    public String execute(String... args) {
-        return "pinging " + args[0];
+    public String execute() {
+        return isIpPresent() ? ip : "";
     }
+
+    private boolean isIpPresent() {
+        return ip != null;
+    }
+
 }

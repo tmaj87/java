@@ -6,9 +6,4 @@ public class CommandCount implements Command {
     public String execute() {
         return "count-1";
     }
-
-    @Override
-    public String execute(String... args) {
-        return "";
-    }
 }

@@ -6,9 +6,4 @@ public class CommandGetTime implements Command {
     public String execute() {
         return "time";
     }
-
-    @Override
-    public String execute(String... args) {
-        return "";
-    }
 }
