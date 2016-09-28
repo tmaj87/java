@@ -7,31 +7,32 @@ import static org.junit.Assert.assertEquals;
 public class CommandTest {
 
     public static final String IP = "IP";
+    private final CommandListener listener = new CommandListener();
 
     @Test
     public void shouldExecuteTimeCommand() {
-        String time = new CommandGetTime().execute();
+        String time = listener.execute(new CommandGetTime());
 
         assertEquals("time", time);
     }
 
     @Test
     public void shouldExecutePingCommand() {
-        String ping = new CommandPing().execute();
+        String ping = listener.execute(new CommandPing());
 
-        assertEquals("ping", ping);
+        assertEquals(null, ping);
     }
 
     @Test
     public void shouldExecutePingWithIp() {
-        String ping = new CommandPing().execute(IP);
+        String ping = listener.execute(new CommandPing(IP));
 
-        assertEquals("pinging " + IP, ping);
+        assertEquals(IP, ping);
     }
 
     @Test
     public void shouldExecuteCountCommand() {
-        String count = new CommandCount().execute();
+        String count = listener.execute(new CommandCount());
 
         assertEquals("count-1", count);
     }
