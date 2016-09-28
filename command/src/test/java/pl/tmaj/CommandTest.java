@@ -34,9 +34,9 @@ public class CommandTest {
     public void shouldCountCommands() {
         CommandListener listener = new CommandListener();
 
-        listener.execute(new CommandCount());
-        listener.execute(new CommandCount());
+        listener.execute(new CommandNull());
+        listener.execute(new CommandNull());
 
-        assertEquals("CommandCount-2", listener.count());
+        assertEquals("CommandNull-2", listener.count());
     }
 }
