@@ -1,19 +1,33 @@
 package pl.tmaj;
 
+import org.joda.time.DateTime;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyString;
 
+@RunWith(MockitoJUnitRunner.class)
 public class CommandTest {
 
-    public static final String IP = "IP";
+    private static final String IP = "IP";
+    private static final String TIME = "1970/01/01 00:00:01";
     private final Listener listener = new Listener();
+
+    @Mock DateTime dateTime;
+    @InjectMocks CommandGetTime timeCommand;
 
     @Test
     public void shouldGetCurrentTime() {
-        String time = listener.execute(new CommandGetTime());
+        given(dateTime.toString(anyString())).willReturn(TIME);
 
-        assertEquals("time", time);
+        String time = listener.execute(timeCommand);
+
+        assertEquals(TIME, time);
     }
 
     @Test

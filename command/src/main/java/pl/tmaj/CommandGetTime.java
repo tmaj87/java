@@ -1,9 +1,15 @@
 package pl.tmaj;
 
+import org.joda.time.DateTime;
+
+
 public class CommandGetTime implements Command {
+
+    private static final String FORMAT = "YYYY/MM/dd HH:mm:ss";
+    private DateTime date = new DateTime();
 
     @Override
     public String execute() {
-        return "time";
+        return date.toString(FORMAT);
     }
 }
