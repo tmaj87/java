@@ -10,14 +10,14 @@ public class CommandTest {
     private final CommandListener listener = new CommandListener();
 
     @Test
-    public void shouldExecuteTimeCommand() {
+    public void shouldGetCurrentTime() {
         String time = listener.execute(new CommandGetTime());
 
         assertEquals("time", time);
     }
 
     @Test
-    public void shouldExecutePingCommand() {
+    public void shouldExecutePingWithNoArgs() {
         String ping = listener.execute(new CommandPing());
 
         assertEquals("", ping);
