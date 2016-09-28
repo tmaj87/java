@@ -1,7 +1,8 @@
 package pl.tmaj;
 
-public class CommandPing {
-    public static String execute() {
+public class CommandPing implements Command {
+
+    public String execute() {
         return "ping";
     }
 }

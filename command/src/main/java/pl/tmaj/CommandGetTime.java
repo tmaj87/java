@@ -1,7 +1,7 @@
 package pl.tmaj;
 
-public class CommandGetTime {
-    public static String execute() {
+public class CommandGetTime implements Command {
+    public String execute() {
         return "time";
     }
 }
