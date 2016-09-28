@@ -29,7 +29,7 @@ public class CommandListener {
 
     private void record(String name, Integer value) {
         if (value != null) {
-            map.put(name, value++);
+            map.put(name, value + 1);
         } else {
             map.put(name, 1);
         }
