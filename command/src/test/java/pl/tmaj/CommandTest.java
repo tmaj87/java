@@ -29,4 +29,11 @@ public class CommandTest {
 
         assertEquals(IP, ping);
     }
+
+    @Test
+    public void shouldReturnNothing() {
+        String empty = listener.execute(new CommandNull());
+
+        assertEquals("", empty);
+    }
 }
