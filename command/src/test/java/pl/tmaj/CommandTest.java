@@ -31,11 +31,12 @@ public class CommandTest {
     }
 
     @Test
-    public void shouldExecuteCountCommand() {
+    public void shouldCountCommands() {
         CommandListener listener = new CommandListener();
 
         listener.execute(new CommandCount());
+        listener.execute(new CommandCount());
 
-        assertEquals("CommandCount-1", listener.count());
+        assertEquals("CommandCount-2", listener.count());
     }
 }
