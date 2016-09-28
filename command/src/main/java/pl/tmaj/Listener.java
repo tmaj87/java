@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class CommandListener {
+public class Listener {
 
     private final Map<String, Integer> map = new HashMap<>();
 

@@ -7,7 +7,7 @@ import static org.junit.Assert.assertEquals;
 public class CommandTest {
 
     public static final String IP = "IP";
-    private final CommandListener listener = new CommandListener();
+    private final Listener listener = new Listener();
 
     @Test
     public void shouldGetCurrentTime() {
@@ -28,15 +28,5 @@ public class CommandTest {
         String ping = listener.execute(new CommandPing(IP));
 
         assertEquals(IP, ping);
-    }
-
-    @Test
-    public void shouldCountCommands() {
-        CommandListener listener = new CommandListener();
-
-        listener.execute(new CommandNull());
-        listener.execute(new CommandNull());
-
-        assertEquals("CommandNull-2", listener.count());
     }
 }
