@@ -10,7 +10,13 @@ public class CommandTest {
     public void shouldGetTime() {
         String time = CommandGetTime.execute();
 
-        assertEquals("TIME", time);
+        assertEquals("time", time);
     }
 
+    @Test
+    public void shouldGetPing() {
+        String ping = CommandPing.execute();
+
+        assertEquals("ping", ping);
+    }
 }
