@@ -3,6 +3,9 @@ package pl.tmaj;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.junit.Assert.*;
 
 public class ListenerTest {
@@ -10,11 +13,13 @@ public class ListenerTest {
     @Test
     public void shouldCountCommands() {
         Listener listener = new Listener();
+        Map<String, Integer> map = new HashMap<>();
+        map.put("CommandNull", 2);
 
         listener.execute(new CommandNull());
         listener.execute(new CommandNull());
 
-        assertEquals("CommandNull-2", listener.count());
+        assertEquals(map, listener.count());
     }
 
     @Test

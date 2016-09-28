@@ -1,8 +1,8 @@
 package pl.tmaj;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 public class Listener {
 
@@ -13,12 +13,8 @@ public class Listener {
         return command.execute();
     }
 
-    public String count() {
-        StringBuilder sBuilder = new StringBuilder();
-        for (Entry<String, Integer> entry : map.entrySet()) {
-            sBuilder.append(entry.getKey() + "-" + entry.getValue());
-        }
-        return sBuilder.toString();
+    public Map<String, Integer> count() {
+        return Collections.unmodifiableMap(map);
     }
 
     private void recordCommand(Command command) {
