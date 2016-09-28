@@ -32,8 +32,10 @@ public class CommandTest {
 
     @Test
     public void shouldExecuteCountCommand() {
-        String count = listener.execute(new CommandCount());
+        CommandListener listener = new CommandListener();
 
-        assertEquals("count-1", count);
+        listener.execute(new CommandCount());
+
+        assertEquals("CommandCount-1", listener.count());
     }
 }

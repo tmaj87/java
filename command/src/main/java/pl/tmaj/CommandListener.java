@@ -36,6 +36,6 @@ public class CommandListener {
     }
 
     private String getCommandName(Command command) {
-        return command.getClass().getName();
+        return command.getClass().getSimpleName();
     }
 }
