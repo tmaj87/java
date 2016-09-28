@@ -2,6 +2,7 @@ package pl.tmaj;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class CommandListener {
 
@@ -10,6 +11,14 @@ public class CommandListener {
     public String execute(Command command) {
         recordCommand(command);
         return command.execute();
+    }
+
+    public String count() {
+        StringBuilder sBuilder = new StringBuilder();
+        for (Entry<String, Integer> entry : map.entrySet()) {
+            sBuilder.append(entry.getKey() + "-" + entry.getValue());
+        }
+        return sBuilder.toString();
     }
 
     private void recordCommand(Command command) {
