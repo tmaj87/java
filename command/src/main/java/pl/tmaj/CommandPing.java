@@ -2,7 +2,10 @@ package pl.tmaj;
 
 public class CommandPing implements Command {
 
-    private final String ip;
+    private String ip;
+
+    public CommandPing() {
+    }
 
     public CommandPing(String ip) {
         this.ip = ip;
