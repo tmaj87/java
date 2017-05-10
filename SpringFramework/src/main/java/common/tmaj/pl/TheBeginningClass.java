@@ -7,9 +7,6 @@ import org.springframework.context.annotation.*;
 @ComponentScan
 public class TheBeginningClass {
 
-    protected boolean __BOOL;
-    protected int __INT;
-
     public static void main(String[] args) {
 
         ApplicationContext context = new AnnotationConfigApplicationContext(TheBeginningClass.class);
@@ -20,23 +17,12 @@ public class TheBeginningClass {
     }
 
     @Bean
-    SpringInterfaceWTF mockUnnamed() {
+    SpringInterface mockUnnamed() {
         return new SpringInterfaceWTF() {
 
             public String print() {
                 return "yep..!";
             }
         };
-    }
-
-    class MeLikeCpp {
-
-        public MeLikeCpp() {
-            // super.__BOOL = true;
-
-            // !!
-            // maly wentylator do B
-            // !!
-        }
     }
 }

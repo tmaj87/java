@@ -6,10 +6,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class SpringBeanClass {
 
-    final private SpringInterfaceWTF service;
+    final private SpringInterface service;
 
     @Autowired
-    public SpringBeanClass(SpringInterfaceWTF service) {
+    public SpringBeanClass(SpringInterface service) {
         this.service = service;
     }
 
