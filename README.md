@@ -1,6 +1,6 @@
 http://tmaj.pl
 
-# Wellcome to Java world
+# Welcome to Java world
 
 This is java open source repository.
 
