@@ -1,0 +1,8 @@
+package pl.tmaj;
+
+public interface GUIFactory {
+
+    Button createButton();
+
+    Checkbox createCheckbox();
+}
