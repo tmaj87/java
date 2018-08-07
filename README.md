@@ -12,6 +12,6 @@ http://tmaj.pl
 
 ## Learning and improvements
 
-There are implementations of few design patterns ([abstract factory](patterns/AbstractFactory/src/test/java/pl/tmaj/AbstractFactoryTest.java), [observer](patterns/ObserverPattern/src/main/java/pl/tmaj/GrabStocks.java)) here as well, as [playground](UnitTests/src/test/MainTest.java) for tests. A little bit of [mocking](UnitTests/src/test/javaMessageTest.java) as well. Few [katas](kata/) as well.
+There are implementations of few design patterns ([abstract factory](patterns/AbstractFactory/src/test/java/pl/tmaj/AbstractFactoryTest.java), [observer](patterns/ObserverPattern/src/main/java/pl/tmaj/GrabStocks.java)) here as well, as [playground](UnitTests/src/test/java/MainTest.java) for tests. A little bit of [mocking](UnitTests/src/test/java/MessageTest.java) as well. Few [katas](kata/) as well.
 
 #### ...and also don't forget to look into [Misc](Misc) to find gems like [XORCipher](Misc/XORCipher.java) or [shake your mouse pointer](Misc/AutoIt.java)
