@@ -3,8 +3,9 @@ http://tmaj.pl
 # Welcome to Java world
 
 ## This is java open source repository.
+[theGame](//github.com/tmaj87/theGame)
 
-## What's interesting here?
+## What's also interesting here?
 - definitely check [EncryptedChat](EncryptedChat/src/main/java/it/justDo/chat/), to get some private messaging system
 - if you are interested in evolution mechanisms and how to define them in computer language, check [Evolution](Evolution/src/main/java/it/justDo/evolution/) directory
 - [ScreenCapture.java](ScreenCapture/ScreenCapture.java) is an easy way to get image from all monitors saved as jpg file 
