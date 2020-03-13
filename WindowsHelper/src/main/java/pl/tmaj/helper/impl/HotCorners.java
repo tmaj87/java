@@ -5,6 +5,7 @@ import pl.tmaj.helper.Helper;
 import java.awt.*;
 
 import static java.awt.MouseInfo.getPointerInfo;
+import static java.awt.Toolkit.getDefaultToolkit;
 import static java.awt.event.KeyEvent.VK_TAB;
 import static java.awt.event.KeyEvent.VK_WINDOWS;
 
@@ -36,7 +37,7 @@ public class HotCorners implements Helper {
     }
 
     private boolean inRightBottomCorner() { // TODO: add multi display support
-        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension screen = getDefaultToolkit().getScreenSize();
         Point position = getPointerInfo().getLocation();
         return position.x + 1 == screen.width && position.y + 1 == screen.height;
     }
