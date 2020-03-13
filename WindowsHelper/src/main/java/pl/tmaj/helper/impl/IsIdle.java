@@ -10,14 +10,14 @@ import java.awt.*;
 import static java.awt.MouseInfo.getPointerInfo;
 import static java.util.concurrent.ThreadLocalRandom.current;
 
-public class IdleCheck implements Helper {
+public class IsIdle implements Helper {
 
     private static final int MAX_IDLE_TIME = 60;
     private static final int MAX_DEVIATION = 10;
 
     private final Robot robot;
 
-    public IdleCheck(Robot robot) {
+    public IsIdle(Robot robot) {
         this.robot = robot;
     }
 

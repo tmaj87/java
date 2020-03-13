@@ -1,21 +1,45 @@
 package pl.tmaj;
 
+import lombok.extern.java.Log;
 import pl.tmaj.helper.Helper;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
+import static java.util.concurrent.Executors.newFixedThreadPool;
+
+@Log
 public class WindowsHelper {
 
-    private final List<Helper> helpers;
+    private static final int THROTTLE = 100;
+
+    private final ExecutorService pool;
 
     public WindowsHelper(List<Helper> helpers) {
-       this.helpers = helpers;
+        this.pool = newFixedThreadPool(helpers.size());
+        helpers.forEach(this::newThread);
     }
 
-    public void init() throws InterruptedException { // TODO: spawn new thread
-        while (true) {
-            helpers.forEach(Helper::check);
-            Thread.sleep(100);
-        }
+    private void newThread(Helper helper) {
+        pool.submit(() -> {
+            while (true) {
+                try {
+                    helper.check();
+                    Thread.sleep(THROTTLE);
+                } catch (Exception exception) {
+                    log.warning(Arrays.toString(exception.getStackTrace()));
+                    break;
+                }
+            }
+        });
+    }
+
+    public void kill() {
+        pool.shutdownNow();
+    }
+
+    public boolean isRunning() {
+        return !pool.isShutdown();
     }
 }

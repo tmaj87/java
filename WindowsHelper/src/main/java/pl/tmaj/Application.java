@@ -1,13 +1,13 @@
 package pl.tmaj;
 
+import lombok.extern.java.Log;
 import pl.tmaj.helper.impl.HotCorners;
-import pl.tmaj.helper.impl.IdleCheck;
+import pl.tmaj.helper.impl.IsIdle;
 
 import java.awt.*;
 import java.util.List;
 
-import static java.time.LocalDateTime.now;
-
+@Log
 public class Application {
 
     private static final int SLEEPY_SLEEPY = 2 * 60 * 1000;
@@ -15,12 +15,15 @@ public class Application {
     public static void main(String[] args) throws InterruptedException {
         while (true) {
             try {
-                System.out.println("initiating windows helper " + now());
+                log.info("initiating windows helper");
                 final Robot robot = new Robot();
-                final WindowsHelper helper = new WindowsHelper(List.of(new IdleCheck(robot), new HotCorners(robot)));
-                helper.init();
+                final WindowsHelper helper = new WindowsHelper(List.of(new IsIdle(robot), new HotCorners(robot)));
+                while (helper.isRunning()) {
+                    Thread.sleep(SLEEPY_SLEEPY);
+                }
             } catch (Exception exception) {
-                System.out.println("crash " + now() + " " + exception.getMessage());
+                log.warning(exception.getMessage());
+            } finally {
                 Thread.sleep(SLEEPY_SLEEPY);
             }
         }
