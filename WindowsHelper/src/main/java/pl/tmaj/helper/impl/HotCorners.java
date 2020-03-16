@@ -26,6 +26,10 @@ public class HotCorners implements Helper {
 
     @Override
     public void check() {
+        bottomRight();
+    }
+
+    private void bottomRight() {
         if (inRightBottomCorner()) {
             if (!bottomRightCornerVisited) {
                 launchTaskView();
@@ -39,18 +43,18 @@ public class HotCorners implements Helper {
     private boolean inRightBottomCorner() {
         Point point = getPointerInfo().getLocation();
         Rectangle bounds = getBoundsForPoint(point);
-        return isInBottomRightCorner().test(point, bounds);
+        return isBottomRightCorner().test(point, bounds);
     }
 
     private static Rectangle getBoundsForPoint(Point point) {
         return Stream.of(getLocalGraphicsEnvironment().getScreenDevices())
-                .map(isInBound(point))
+                .map(getInBoundRectangleOrNull(point))
                 .filter(Objects::nonNull)
                 .findFirst()
                 .orElse(getLocalGraphicsEnvironment().getMaximumWindowBounds());
     }
 
-    private static Function<GraphicsDevice, Rectangle> isInBound(Point point) {
+    private static Function<GraphicsDevice, Rectangle> getInBoundRectangleOrNull(Point point) {
         return device -> {
             for (GraphicsConfiguration configuration : device.getConfigurations()) {
                 final Rectangle bounds = configuration.getBounds();
@@ -62,7 +66,7 @@ public class HotCorners implements Helper {
         };
     }
 
-    private BiPredicate<Point, Rectangle> isInBottomRightCorner() {
+    private BiPredicate<Point, Rectangle> isBottomRightCorner() {
         return (point, rectangle) ->
                 point.x - rectangle.x > rectangle.width - ACTIVATION_RANGE
                         && point.y - rectangle.y > rectangle.height - ACTIVATION_RANGE;
