@@ -15,7 +15,7 @@ import static java.awt.event.KeyEvent.VK_WINDOWS;
 
 public class HotCorners implements Helper {
 
-    private static final int ACTIVATION_RANGE = 10;
+    private static final int ACTIVATION_RANGE = 6;
 
     private final Robot robot;
     private boolean bottomRightCornerVisited;

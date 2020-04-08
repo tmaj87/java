@@ -11,45 +11,50 @@ import lombok.extern.java.Log;
 import pl.tmaj.helper.Helper;
 
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.sun.jna.platform.win32.User32.WS_EX_TOPMOST;
-import static com.sun.jna.platform.win32.WinUser.WM_DESTROY;
 import static com.sun.jna.platform.win32.WinUser.WM_SESSION_CHANGE;
 import static com.sun.jna.platform.win32.Wtsapi32.*;
 
-public class IsInLockScreen implements Helper {
-
-    @Override
-    public void check() {
-        new LockScreenListener();
-    }
-}
-
 @Log
-class LockScreenListener implements WindowProc {
+public class IsInLockScreen implements WindowProc, Helper {
 
     private static final String WINDOW_CLASS = UUID.randomUUID().toString();
     private static final HMODULE H_INST = Kernel32.INSTANCE.GetModuleHandle("");
 
-    private boolean locked;
+    public AtomicBoolean locked = new AtomicBoolean();
 
-    public LockScreenListener() {
+    @Override
+    public void check() {
         registerClassEx();
-        final HWND hWnd = createWindowAndRegister();
-        MSG msg = new MSG();
-        while (User32.INSTANCE.GetMessage(msg, hWnd, 0, 0) != 0) {
+        HWND handle = createWindow();
+        MSG message = new MSG();
+        while (User32.INSTANCE.GetMessage(message, handle, 0, 0) != 0) {
             try {
-                User32.INSTANCE.TranslateMessage(msg);
-                User32.INSTANCE.DispatchMessage(msg);
-                if (locked) {
-                    log.info("Screen is locked, sleeping...");
-                    // dispatch event
-                }
+                User32.INSTANCE.TranslateMessage(message);
+                User32.INSTANCE.DispatchMessage(message);
             } catch (Exception exception) {
                 log.warning(exception.getMessage());
             }
         }
-        onDestroy(hWnd);
+        destroyWindow(handle);
+    }
+
+    @Override
+    public LRESULT callback(HWND handle, int message, WPARAM wParam, LPARAM lParam) {
+        codeCave(message, wParam);
+        return User32.INSTANCE.DefWindowProc(handle, message, wParam, lParam);
+    }
+
+    private void codeCave(int message, WPARAM wParam) {
+        if (message == WM_SESSION_CHANGE) {
+            if (wParam.intValue() == WTS_SESSION_LOCK) {
+                locked.set(true);
+            } else if (wParam.intValue() == WTS_SESSION_UNLOCK) {
+                locked.set(false);
+            }
+        }
     }
 
     private void registerClassEx() {
@@ -60,46 +65,17 @@ class LockScreenListener implements WindowProc {
         User32.INSTANCE.RegisterClassEx(wClass);
     }
 
-    private HWND createWindowAndRegister() {
-        final HWND hWnd = User32.INSTANCE.CreateWindowEx(WS_EX_TOPMOST, WINDOW_CLASS, "", 0, 0, 0, 0, 0, null, null, H_INST, null);
+    private HWND createWindow() {
+        HWND hWnd = User32.INSTANCE.CreateWindowEx(WS_EX_TOPMOST, WINDOW_CLASS, "", 0, 0, 0, 0, 0, null, null, H_INST, null);
         Wtsapi32.INSTANCE.WTSRegisterSessionNotification(hWnd, NOTIFY_FOR_THIS_SESSION);
         log.info("LockScreenListener registered");
         return hWnd;
     }
 
-    private void onDestroy(HWND hWnd) {
+    private void destroyWindow(HWND hWnd) {
         Wtsapi32.INSTANCE.WTSUnRegisterSessionNotification(hWnd);
         User32.INSTANCE.UnregisterClass(WINDOW_CLASS, H_INST);
         User32.INSTANCE.DestroyWindow(hWnd);
         log.info("LockScreenListener unregistered");
-    }
-
-    @Override
-    public LRESULT callback(HWND hwnd, int uMsg, WPARAM wParam, LPARAM lParam) {
-        switch (uMsg) {
-            case WM_DESTROY: {
-                User32.INSTANCE.PostQuitMessage(0);
-                return new LRESULT(0);
-            }
-            case WM_SESSION_CHANGE: {
-                this.onSessionChange(wParam);
-                return new LRESULT(0);
-            }
-            default:
-                return User32.INSTANCE.DefWindowProc(hwnd, uMsg, wParam, lParam);
-        }
-    }
-
-    protected void onSessionChange(WPARAM wParam) {
-        switch (wParam.intValue()) {
-            case WTS_SESSION_LOCK: {
-                locked = true;
-                break;
-            }
-            case WTS_SESSION_UNLOCK: {
-                locked = false;
-                break;
-            }
-        }
     }
 }

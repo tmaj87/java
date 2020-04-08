@@ -3,7 +3,6 @@ package pl.tmaj;
 import lombok.extern.java.Log;
 import pl.tmaj.helper.Helper;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
@@ -28,7 +27,7 @@ public class WindowsHelper {
                     helper.check();
                     Thread.sleep(THROTTLE);
                 } catch (Exception exception) {
-                    log.warning(Arrays.toString(exception.getStackTrace()));
+                    log.warning(exception.getMessage());
                     break;
                 }
             }

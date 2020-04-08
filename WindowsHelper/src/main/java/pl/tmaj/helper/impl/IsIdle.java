@@ -12,19 +12,23 @@ import static java.util.concurrent.ThreadLocalRandom.current;
 
 public class IsIdle implements Helper {
 
-    private static final int MAX_IDLE_TIME = 60;
+    private static final int MAX_IDLE_TIME = 10;
     private static final int MAX_DEVIATION = 10;
 
     private final Robot robot;
+    private final IsInLockScreen isInLockScreen;
 
-    public IsIdle(Robot robot) {
+    public IsIdle(Robot robot, IsInLockScreen isInLockScreen) {
         this.robot = robot;
+        this.isInLockScreen = isInLockScreen;
     }
 
     @Override
     public void check() {
         if (getIdleTime() > MAX_IDLE_TIME + rnd()) {
-            shake();
+            if (!isInLockScreen.locked.get()) {
+                shake();
+            }
         }
     }
 
