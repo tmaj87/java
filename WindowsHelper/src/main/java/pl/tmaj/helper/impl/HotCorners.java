@@ -1,5 +1,6 @@
 package pl.tmaj.helper.impl;
 
+import lombok.RequiredArgsConstructor;
 import pl.tmaj.helper.Helper;
 
 import java.awt.*;
@@ -13,16 +14,13 @@ import static java.awt.MouseInfo.getPointerInfo;
 import static java.awt.event.KeyEvent.VK_TAB;
 import static java.awt.event.KeyEvent.VK_WINDOWS;
 
+@RequiredArgsConstructor
 public class HotCorners implements Helper {
 
     private static final int ACTIVATION_RANGE = 6;
 
     private final Robot robot;
     private boolean bottomRightCornerVisited;
-
-    public HotCorners(Robot robot) {
-        this.robot = robot;
-    }
 
     @Override
     public void check() {

@@ -1,34 +1,29 @@
 package pl.tmaj.helper.impl;
 
+import lombok.RequiredArgsConstructor;
 import pl.tmaj.helper.Helper;
 import pl.tmaj.model.Kernel32;
 import pl.tmaj.model.LASTINPUTINFO;
 import pl.tmaj.model.User32;
 
 import java.awt.*;
+import java.util.Optional;
 
 import static java.awt.MouseInfo.getPointerInfo;
 import static java.util.concurrent.ThreadLocalRandom.current;
 
+@RequiredArgsConstructor
 public class IsIdle implements Helper {
 
-    private static final int MAX_IDLE_TIME = 10;
+    private static final int MAX_IDLE_TIME = 60;
     private static final int MAX_DEVIATION = 10;
 
     private final Robot robot;
-    private final IsInLockScreen isInLockScreen;
-
-    public IsIdle(Robot robot, IsInLockScreen isInLockScreen) {
-        this.robot = robot;
-        this.isInLockScreen = isInLockScreen;
-    }
 
     @Override
     public void check() {
         if (getIdleTime() > MAX_IDLE_TIME + rnd()) {
-            if (!isInLockScreen.locked.get()) {
-                shake();
-            }
+            shake();
         }
     }
 
@@ -39,10 +34,12 @@ public class IsIdle implements Helper {
     }
 
     private void shake() {
-        Point position = getPointerInfo().getLocation();
-        int x = position.x + halfOfRnd();
-        int y = position.y + halfOfRnd();
-        robot.mouseMove(x, y);
+        Optional.ofNullable(getPointerInfo()).ifPresent(pointerInfo -> {
+            Point position = pointerInfo.getLocation();
+            int x = position.x + halfOfRnd();
+            int y = position.y + halfOfRnd();
+            robot.mouseMove(x, y);
+        });
     }
 
     private int rnd() {

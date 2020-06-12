@@ -1,6 +1,5 @@
 package pl.tmaj;
 
-import lombok.extern.java.Log;
 import pl.tmaj.helper.Helper;
 
 import java.util.List;
@@ -8,7 +7,6 @@ import java.util.concurrent.ExecutorService;
 
 import static java.util.concurrent.Executors.newFixedThreadPool;
 
-@Log
 public class WindowsHelper {
 
     private static final int THROTTLE = 100;
@@ -27,7 +25,7 @@ public class WindowsHelper {
                     helper.check();
                     Thread.sleep(THROTTLE);
                 } catch (Exception exception) {
-                    log.warning(exception.getMessage());
+                    exception.printStackTrace();
                     break;
                 }
             }
