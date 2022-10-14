@@ -16,9 +16,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class IdGeneratorTest {
 
-    private IdGenerator generator = new IdGenerator();
-
+    private final IdGenerator generator = new IdGenerator();
+    private final String[] keys = new String[]{
+            "LEieOoA(fFHV(_.cn0AkpE!U_(jw3vyQ",
+            "SzF1OoGA!Jv67_ZqYdhimxHTED.tw2su"
+    };
     private final String toEncrypt = "The quick brown fox jumps over the lazy dog";
+    private final String toDecrypt = "ime!eoESedexeJe1e6ESeFeheqeTeZESeGeqeEESevexe_eYeiESeqeHeoehESeme!eoESe7eze.eDESeOeqeA";
 
     @Test
     void shouldGetIds() {
@@ -40,32 +44,31 @@ class IdGeneratorTest {
                 .map(dictionary::get)
                 .collect(joining());
 
-        assertEquals("ime!eoESedexeJe1e6ESeFeheqeTeZESeGeqeEESevexe_eYeiESeqeHeoehESeme!eoESe7eze.eDESeOeqeA", encrypted);
+        assertEquals(toDecrypt, encrypted);
     }
 
     @Test
     void shouldDecrypt() {
-        String encrypted = "ime!eoESedexeJe1e6ESeFeheqeTeZESeGeqeEESevexe_eYeiESeqeHeoehESeme!eoESe7eze.eDESeOeqeA";
-        Map<String, String> reversedDictionary = prepareDictionary().entrySet().stream()
-                .collect(toMap(Entry::getValue, Entry::getKey));
-        String decrypted = Pattern.compile(".{2}")
-                .matcher(encrypted)
+        Map<String, String> dictionary = prepareReversedDictionary();
+        String decrypted = Pattern.compile(".{" + keys.length + "}")
+                .matcher(toDecrypt)
                 .results()
                 .map(MatchResult::group)
-                .map(reversedDictionary::get)
+                .map(dictionary::get)
                 .collect(joining());
 
         assertEquals(toEncrypt, decrypted);
     }
 
     private Map<String, String> prepareDictionary() {
-        String[] params = new String[]{
-                "LEieOoA(fFHV(_.cn0AkpE!U_(jw3vyQ",
-                "SzF1OoGA!Jv67_ZqYdhimxHTED.tw2su"
-        };
-        List<String> result = generator.getAllIds(params, 127);
+        List<String> result = generator.getAllIds(keys, 127);
         return IntStream.range(32, 127)
                 .boxed()
                 .collect(toMap(i -> String.valueOf((char) i.byteValue()), result::get));
+    }
+
+    private Map<String, String> prepareReversedDictionary() {
+        return prepareDictionary().entrySet().stream()
+                .collect(toMap(Entry::getValue, Entry::getKey));
     }
 }
