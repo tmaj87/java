@@ -11,6 +11,72 @@ import java.util.Random;
 
 public class IdleTimer {
 
+    private static final int MAX = 90;
+    private static final int OFFSET = 80;
+    private static int delay;
+
+    public static void main(String[] args) {
+        if (!System.getProperty("os.name").contains("Windows")) {
+            System.err.println("ERROR: Only implemented on Windows");
+            System.exit(1);
+        }
+        IdleTimer it = new IdleTimer();
+        it.loop();
+    }
+
+    public IdleTimer() {
+        resetDelay();
+    }
+
+    public void loop() {
+        int idle;
+        int last = -1;
+        for (; ; ) {
+            idle = getIdleTime() / 1000;
+            if (idle > 0 && last != idle) { // every second
+                last = idle;
+                if (idle > MAX) {
+                    try {
+                        moveWithDelay();
+                    } catch (Exception e) {
+                        break;
+                    }
+                    resetDelay();
+                }
+            } else {
+                increaseDelay();
+                try {
+                    sleep(delay * 1000L);
+                } catch (Exception e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+        }
+    }
+
+    private void increaseDelay() {
+        if (delay < MAX / 2) {
+            delay++;
+        }
+    }
+
+    private void resetDelay() {
+        delay = 2;
+    }
+
+    private static void moveWithDelay() throws AWTException {
+        Robot robot = new Robot();
+        Point point = MouseInfo.getPointerInfo().getLocation();
+        int randX = current().nextInt(-OFFSET, OFFSET);
+        int randY = current().nextInt(-OFFSET, OFFSET);
+        robot.mouseMove(point.x + randX, point.y + randY);
+        int delay = current().nextInt(0, 1000);
+        robot.delay(delay);
+    }
+
+    // --- windows internals ---
+
     public interface Kernel32 extends StdCallLibrary {
         Kernel32 INSTANCE = (Kernel32) Native.loadLibrary("kernel32", Kernel32.class);
 
@@ -37,53 +103,5 @@ public class IdleTimer {
         User32.LASTINPUTINFO lastInputInfo = new User32.LASTINPUTINFO();
         User32.INSTANCE.GetLastInputInfo(lastInputInfo);
         return Kernel32.INSTANCE.GetTickCount() - lastInputInfo.dwTime;
-    }
-
-    public static void main(String[] args) throws Exception {
-        if (!System.getProperty("os.name").contains("Windows")) {
-            System.err.println("ERROR: Only implemented on Windows");
-            System.exit(1);
-        }
-
-        idleCheckLoop();
-    }
-
-    private static void randomMouseMove() throws AWTException {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int screenWidth = (int) screenSize.getWidth();
-        int screenHeight = (int) screenSize.getHeight();
-
-        Random random = new Random();
-        mouseMoveWithDelay(random.nextInt(screenWidth), random.nextInt(screenHeight), 4);
-    }
-
-    private static void mouseMoveWithDelay(int dest_x, int dest_y, int delay) throws AWTException {
-        Robot robot = new Robot();
-
-        Point point = MouseInfo.getPointerInfo().getLocation();
-        int base_x = (int) point.getX();
-        int base_y = (int) point.getY();
-
-        for (int i = 0; i < 100; i++) {
-            int x = ((dest_x * i) / 100) + (base_x * (100 - i) / 100);
-            int y = ((dest_y * i) / 100) + (base_y * (100 - i) / 100);
-            robot.mouseMove(x, y);
-            robot.delay(delay);
-        }
-    }
-
-    private static void idleCheckLoop() throws AWTException {
-        int idleSeconds;
-        int lastSecond = -1;
-        for (; ; ) {
-            idleSeconds = getIdleTime() / 1000;
-            if (idleSeconds > 0 && lastSecond != idleSeconds) {
-                System.out.println(idleSeconds + " seconds idle");
-                lastSecond = idleSeconds;
-                if (idleSeconds > 5) {
-                    randomMouseMove();
-                }
-            }
-        }
     }
 }
